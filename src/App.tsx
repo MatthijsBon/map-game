@@ -1,4 +1,4 @@
-import { MapWrapper } from "./components";
+import { MapContainer } from "./components";
 import toast, { Toaster } from "react-hot-toast";
 import { Suspense, useCallback } from "react";
 import { FeatureLike } from "ol/Feature";
@@ -25,7 +25,7 @@ function MapApp() {
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <h1 className="text-2xl font-bold text-blue-900">
-              Nederlandse Provincies
+              Nederlandse Provincies en Treinstations
             </h1>
           </div>
         </div>
@@ -35,7 +35,7 @@ function MapApp() {
         <div className="overflow-hidden rounded-lg bg-white shadow-lg">
           <div className="h-[600px] lg:h-[1000px]">
             <Suspense fallback={<div>Loading...</div>}>
-              <MapWrapper onProvinceClick={handleProvinceClick} />
+              <MapContainer onProvinceClick={handleProvinceClick} />
             </Suspense>
           </div>
         </div>
