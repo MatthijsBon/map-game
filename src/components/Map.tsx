@@ -8,28 +8,20 @@ import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
 import GeoJSON, { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
 import { fromLonLat } from "ol/proj";
-import { WMTS } from "ol/source";
-import { Options, optionsFromCapabilities } from "ol/source/WMTS";
-import { WMTSCapabilities } from "ol/format";
 import { FeatureLike } from "ol/Feature";
 import { Station } from "../lib/api/stations";
-import { stationStyle, provinceStyle } from "./styles.ts";
+import { stationStyle, createProvinceStyle, getUniqueColor } from "./styles.ts";
 import "ol/ol.css";
 
 interface MapComponentProps {
   onProvinceClick: (feature: FeatureLike) => void;
-  capabilities: string;
   stations: Station[];
-  color: string;
 }
 
-const wmtsCapabilitiesParser = new WMTSCapabilities();
+// No need to define these in the component
 const geoJsonFormat = new GeoJSON();
-export function Map({
-  onProvinceClick,
-  capabilities,
-  stations,
-}: MapComponentProps) {
+
+export function Map({ onProvinceClick, stations }: MapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<OlMap | null>(null);
 
@@ -47,22 +39,8 @@ export function Map({
     [stations],
   );
 
-  useEffect(() => {
-    if (!mapRef.current) return;
-
+  const stationsLayer = useMemo(() => {
     // Create vector source and layer for provinces
-    const provincesSource = new VectorSource({
-      url: "/provinces.json",
-      format: geoJsonFormat,
-    });
-
-    const provincesLayer = new VectorLayer({
-      source: provincesSource,
-      opacity: 0.7,
-      style: provinceStyle,
-    });
-
-    // Create vector source and layer for stations
     const stationsSource = new VectorSource({
       features: geoJsonFormat.readFeatures(stationFeatures, {
         dataProjection: "EPSG:4326",
@@ -70,17 +48,38 @@ export function Map({
       }),
     });
 
-    const stationsLayer = new VectorLayer({
+    return new VectorLayer({
       source: stationsSource,
-      opacity: 1,
+      opacity: 0.8,
       style: stationStyle,
     });
+  }, [stationFeatures]);
 
-    const parsedCapabilities = wmtsCapabilitiesParser.read(capabilities);
-    const options = optionsFromCapabilities(parsedCapabilities, {
-      layer: "grijs",
-      matrixSet: "EPSG:3857",
-    }) as Options;
+  const provincesLayer = useMemo(() => {
+    // Create vector source and layer for provinces
+    const provincesSource = new VectorSource({
+      url: "/provinces.json",
+      format: geoJsonFormat,
+    });
+
+    provincesSource.on("featuresloadend", () => {
+      provincesSource.getFeatures().forEach((feature) => {
+        const randomColor = getUniqueColor();
+        feature.setStyle(createProvinceStyle(randomColor));
+      });
+    });
+
+    return new VectorLayer({
+      properties: {
+        name: "Provinces",
+      },
+      source: provincesSource,
+      opacity: 1,
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
 
     const map = new OlMap({
       target: mapRef.current,
@@ -88,10 +87,6 @@ export function Map({
         new TileLayer({
           opacity: 0.4,
           source: new OSM(),
-        }),
-        new TileLayer({
-          opacity: 1,
-          source: new WMTS(options),
         }),
         provincesLayer,
         stationsLayer,
@@ -102,24 +97,27 @@ export function Map({
       }),
     });
 
+    mapInstanceRef.current = map;
     map.on("click", (event) => {
       const feature = map.forEachFeatureAtPixel(
         event.pixel,
         (feature) => feature,
+        {
+          layerFilter: (candidate) =>
+            candidate.getProperties().name === "Provinces",
+        },
       );
       if (feature) {
         onProvinceClick(feature);
       }
     });
 
-    mapInstanceRef.current = map;
-
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.setTarget(undefined);
       }
     };
-  }, [capabilities, onProvinceClick, stationFeatures]);
+  }, [onProvinceClick, provincesLayer, stationFeatures, stationsLayer]);
 
   return <div ref={mapRef} className="h-full w-full" />;
 }
