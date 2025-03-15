@@ -1,10 +1,12 @@
 "use server";
-import { getStationsPromise } from "../lib/api/stations";
-import { FeatureLike } from "ol/Feature";
+import { getStationsPromise, Station } from "../lib/api/stations";
 import { Map } from "./Map";
 
 type MapWrapperProps = {
-  onProvinceClick: (feature: FeatureLike) => void;
+  onProvinceClick: (
+    name: string,
+    stationsWithin: Pick<Station, "id" | "name">[],
+  ) => void;
 };
 
 export async function MapContainer({ onProvinceClick }: MapWrapperProps) {

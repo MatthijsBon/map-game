@@ -1,23 +1,19 @@
 import { MapContainer } from "./components";
 import toast, { Toaster } from "react-hot-toast";
 import { Suspense, useCallback } from "react";
-import { FeatureLike } from "ol/Feature";
-
-const showProvinceDetails = (feature: FeatureLike) => {
-  toast.custom(
-    <div className="bg-grey-100 rounded-lg px-4 py-6 text-blue-100">
-      <h2 className="text-lg font-bold">🌍 {feature.getProperties().name}</h2>
-    </div>,
-    {
-      duration: 4000,
-    },
-  );
-};
+import { ToastMessage } from "./components/ToastMessage.tsx";
+import { Station } from "./lib/api/stations";
 
 function MapApp() {
-  const handleProvinceClick = useCallback((feature: FeatureLike) => {
-    showProvinceDetails(feature);
-  }, []);
+  const handleProvinceClick = useCallback(
+    (name: string, stationsWithin: Pick<Station, "id" | "name">[]) => {
+      toast.custom(<ToastMessage name={name} stations={stationsWithin} />, {
+        duration: 4000,
+        position: "bottom-left",
+      });
+    },
+    [],
+  );
 
   return (
     <div className="bg-grey-300 min-h-screen">

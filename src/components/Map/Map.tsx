@@ -8,13 +8,21 @@ import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
 import GeoJSON, { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
 import { fromLonLat } from "ol/proj";
-import { FeatureLike } from "ol/Feature";
-import { Station } from "../lib/api/stations";
+import { Station } from "../../lib/api/stations";
 import { stationStyle, createProvinceStyle, getUniqueColor } from "./styles.ts";
 import "ol/ol.css";
+import {
+  createFeatureCollection,
+  getFeatureById,
+  getIntersectingPoints,
+} from "./utils.ts";
+import { CRS } from "./constants.ts";
 
 interface MapComponentProps {
-  onProvinceClick: (feature: FeatureLike) => void;
+  onProvinceClick: (
+    name: string,
+    stationsWithin: Pick<Station, "id" | "name">[],
+  ) => void;
   stations: Station[];
 }
 
@@ -26,16 +34,10 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
   const mapInstanceRef = useRef<OlMap | null>(null);
 
   const stationFeatures = useMemo<GeoJSONFeatureCollection>(
-    () => ({
-      type: "FeatureCollection",
-      crs: {
-        type: "name",
-        properties: {
-          name: "EPSG:4326",
-        },
-      },
-      features: stations.map((station) => Station.toFeatureLike(station)),
-    }),
+    () =>
+      createFeatureCollection(
+        stations.map((station) => Station.toFeatureLike(station)),
+      ),
     [stations],
   );
 
@@ -43,8 +45,8 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
     // Create vector source and layer for provinces
     const stationsSource = new VectorSource({
       features: geoJsonFormat.readFeatures(stationFeatures, {
-        dataProjection: "EPSG:4326",
-        featureProjection: "EPSG:3857",
+        dataProjection: CRS.WGS84,
+        featureProjection: CRS.WEB_MERCATOR,
       }),
     });
 
@@ -107,8 +109,15 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
             candidate.getProperties().name === "Provinces",
         },
       );
-      if (feature) {
-        onProvinceClick(feature);
+      const realFeature = getFeatureById(provincesLayer, feature?.getId());
+      if (realFeature) {
+        const stationsWithin = getIntersectingPoints(
+          stationsLayer.getSource(),
+          realFeature.getGeometry(),
+        )
+          .map((feature) => Station.maybeCreate(feature.getProperties()))
+          .filter((station): station is Station => station !== null);
+        onProvinceClick(realFeature.getProperties().name, stationsWithin);
       }
     });
 

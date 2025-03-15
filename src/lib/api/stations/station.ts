@@ -1,4 +1,5 @@
 import { StationDto, Location } from "./types.ts";
+import { GeoJSONFeature } from "ol/format/GeoJSON";
 
 export type Station = {
   id: string;
@@ -16,7 +17,7 @@ export const Station = {
       country: dto.country,
     };
   },
-  toFeatureLike(station: Station) {
+  toFeatureLike(station: Station): GeoJSONFeature {
     return {
       type: "Feature",
       geometry: {
@@ -27,7 +28,24 @@ export const Station = {
         id: station.id,
         name: station.name,
         country: station.country,
+        location: station.location,
       },
     };
+  },
+  hasStationProperties(
+    properties: Record<string, unknown>,
+  ): properties is Station {
+    return (
+      "id" in properties &&
+      "name" in properties &&
+      "location" in properties &&
+      "country" in properties
+    );
+  },
+  maybeCreate(properties: Record<string, unknown>): Station | null {
+    if (this.hasStationProperties(properties)) {
+      return properties;
+    }
+    return null;
   },
 };
