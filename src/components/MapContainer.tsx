@@ -7,10 +7,20 @@ type MapWrapperProps = {
     name: string,
     stationsWithin: Pick<Station, "id" | "name">[],
   ) => void;
+  onWinCondition: () => void;
 };
 
-export async function MapContainer({ onProvinceClick }: MapWrapperProps) {
+export async function MapContainer({
+  onProvinceClick,
+  onWinCondition,
+}: MapWrapperProps) {
   const stations = await getStationsPromise;
 
-  return <Map onProvinceClick={onProvinceClick} stations={stations} />;
+  return (
+    <Map
+      onProvinceClick={onProvinceClick}
+      onWinCondition={onWinCondition}
+      stations={stations}
+    />
+  );
 }

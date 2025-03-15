@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import OlMap from "ol/Map";
 import View from "ol/View";
 import TileLayer from "ol/layer/Tile";
@@ -17,21 +17,28 @@ import {
   getIntersectingPoints,
 } from "./utils.ts";
 import { CRS } from "./constants.ts";
+import { Feature } from "ol";
 
 interface MapComponentProps {
   onProvinceClick: (
     name: string,
     stationsWithin: Pick<Station, "id" | "name">[],
   ) => void;
+  onWinCondition: () => void;
   stations: Station[];
 }
 
 // No need to define these in the component
 const geoJsonFormat = new GeoJSON();
 
-export function Map({ onProvinceClick, stations }: MapComponentProps) {
+export function Map({
+  onProvinceClick,
+  onWinCondition,
+  stations,
+}: MapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<OlMap | null>(null);
+  const activeColor = useRef<string | null>(null);
 
   const stationFeatures = useMemo<GeoJSONFeatureCollection>(
     () =>
@@ -57,6 +64,14 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
     });
   }, [stationFeatures]);
 
+  const areFeaturesTheSameColor = useCallback((features: Feature[]) => {
+    if (activeColor.current === null) return false;
+
+    return features.every((feature) => {
+      return feature.get("color") === activeColor.current;
+    });
+  }, []);
+
   const provincesLayer = useMemo(() => {
     // Create vector source and layer for provinces
     const provincesSource = new VectorSource({
@@ -67,8 +82,16 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
     provincesSource.on("featuresloadend", () => {
       provincesSource.getFeatures().forEach((feature) => {
         const randomColor = getUniqueColor();
+        feature.set("color", randomColor);
         feature.setStyle(createProvinceStyle(randomColor));
       });
+    });
+
+    provincesSource.on("changefeature", () => {
+      const features = provincesSource.getFeatures();
+      if (areFeaturesTheSameColor(features)) {
+        onWinCondition();
+      }
     });
 
     return new VectorLayer({
@@ -78,7 +101,7 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
       source: provincesSource,
       opacity: 1,
     });
-  }, []);
+  }, [areFeaturesTheSameColor, onWinCondition]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -117,6 +140,14 @@ export function Map({ onProvinceClick, stations }: MapComponentProps) {
         )
           .map((feature) => Station.maybeCreate(feature.getProperties()))
           .filter((station): station is Station => station !== null);
+
+        if (activeColor.current === null) {
+          activeColor.current = realFeature.get("color");
+        } else {
+          realFeature.set("color", activeColor.current);
+          realFeature.setStyle(createProvinceStyle(activeColor.current));
+        }
+
         onProvinceClick(realFeature.getProperties().name, stationsWithin);
       }
     });

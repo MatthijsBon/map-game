@@ -14,6 +14,13 @@ function MapApp() {
     },
     [],
   );
+  const onWinCondition = useCallback(() => {
+    toast.success("All stations are the same color! 🎉", {
+      icon: "🎉",
+      duration: 0,
+      position: "top-center",
+    });
+  }, []);
 
   return (
     <div className="bg-grey-300 min-h-screen">
@@ -31,7 +38,10 @@ function MapApp() {
         <div className="overflow-hidden rounded-lg bg-white shadow-lg">
           <div className="h-[600px] lg:h-[1000px]">
             <Suspense fallback={<div>Loading...</div>}>
-              <MapContainer onProvinceClick={handleProvinceClick} />
+              <MapContainer
+                onProvinceClick={handleProvinceClick}
+                onWinCondition={onWinCondition}
+              />
             </Suspense>
           </div>
         </div>
