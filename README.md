@@ -1,54 +1,31 @@
-# React + TypeScript + Vite
+# Interactive Map Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+I started off with a Vite + React + Typescript template for a simple application that only runs client-side.
 
-Currently, two official plugins are available:
+I have some prior experience with OpenLayers, so when I read the assignment I figured I'd use that for showing the map. I liked the API of  `react-hot-toast`, but never used it, so it was a easy choice to use that for showing the toast messages. 
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+I have used Tailwind before, although not extensively, but I liked working with it, so I used that to style the application.
 
-## Expanding the ESLint configuration
+## Run the application
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+It's available on `https://interactivemapgame.netlify.com` or you can run it locally with: 
+```shell
+npm run dev
 ```
+Then go to `http://localhost:5173/` to see the application. You do need to have a `.env` file to run it, with an API key to make requests to the NS Api. 
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Approach
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+I started of with a simple Map component that could show the OSM background layer and the provinces on top. That was not extremely hard, but I remember from experiences how annoying OpenLayers could be to integrate with React, because it's so Object-Oriented. In the end a bit of hooks and persistence got me a nice result already.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
+Initially I thought to fetch the `stations` as soon as the Map loaded. I don't really like the fetch in `useEffect`, so instead I used React 19's latest `use` hook directly use a promise and then show the map. Ideally we fetch this server-side, but I didn't want to use a full framework for this assignment, and I didn't have time to further investigate using a custom Express SSR solution.
+
+## Caveats
+
+I didn't implement the animation on clicking a province for the first time, as I ran out of time. It is also a bit finicky, because I need to be careful not to re-render the map, otherwise all the feature-state is lost. This is a bit of a downside of using OpenLayers.
+
+It would be nice to make a nice abstraction over the integration with OpenLayers, so we don't have to bother with the 'ugly' useEffect, but instead can use a custom hook. Or, since OpenLayers can work quite independently of React, we might not even need a hook, but instead use something like a builder pattern to create a Map, in which the last step would be to assign the 'map' to the target-ref created by React.
+
+I didn't implement any tests, as the logic for this application is limited. Where there more logic or components to test, I'd use `vitest` with `@testing-library/react` to do unit testing.
+
+There's not much of "design" in the application right now, there isn't even a description of what the goal of this game is. I thought about the implementation a bit more than about how people would "work" with it. In future endeavours it might be good to add a bit of explanation what the goal is and what interactions are possible.
