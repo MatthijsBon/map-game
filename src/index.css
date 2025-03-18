@@ -1,11 +1,38 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-*: initial;
+  --color-grey-100: #ffffff;
+  --color-grey-300: #e6e6e9;
+
+  --color-blue-100: #0063d3;
+  --color-blue-900: #003082;
+
+  --color-yellow: #ffc917;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 .ol-control {
     @apply bg-grey-100 rounded-lg shadow-md;
 }
 
 .ol-control.ol-zoom button {
-    @apply bg-grey-100 text-blue-100 hover:text-blue-900 focus:text-blue-900 w-8 h-8 m-1 hover:outline-none focus:outline-none;
+    @apply bg-grey-100 text-blue-100 hover:text-blue-900 focus:text-blue-900 w-8 h-8 m-1 hover:outline-hidden focus:outline-hidden;
 }
