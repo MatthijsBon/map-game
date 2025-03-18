@@ -1,8 +1,8 @@
-import { MapContainer } from "./components";
-import { Toaster } from "react-hot-toast";
+import { MapContainer } from "@/components";
 import { Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 
-function MapApp() {
+export default function Home() {
   return (
     <div className="bg-grey-300 min-h-screen">
       <header className="bg-grey-100 shadow-xs">
@@ -18,7 +18,7 @@ function MapApp() {
       <main className="mx-auto min-h-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="overflow-hidden rounded-lg bg-white shadow-lg">
           <div className="h-[600px] lg:h-[1000px]">
-            <Suspense fallback={<div className="m-auto">Loading...</div>}>
+            <Suspense fallback={<div>Loading...</div>}>
               <MapContainer />
             </Suspense>
           </div>
@@ -29,5 +29,3 @@ function MapApp() {
     </div>
   );
 }
-
-export default MapApp;

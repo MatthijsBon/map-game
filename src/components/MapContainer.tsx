@@ -1,9 +1,8 @@
-import { getStationsPromise } from "../lib/api/stations";
+import { getStations } from "@/lib/api/stations";
 import { Map } from "./Map";
-import { use } from "react";
 
-export function MapContainer() {
-  const stations = use(getStationsPromise);
+export async function MapContainer() {
+  const stations = await getStations();
 
   return <Map stations={stations} />;
 }

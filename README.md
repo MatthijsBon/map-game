@@ -12,7 +12,7 @@ It's available on [`https://interactivemapgame.netlify.app`](https://interactive
 ```shell
 npm run dev
 ```
-Then go to `http://localhost:5173/` to see the application. You do need to have a `.env` file to run it, with an API key to make requests to the NS Api. 
+Then go to `http://localhost:3000/` to see the application. You do need to have a `.env` file to run it, with an API key to make requests to the NS Api. 
 
 ## Approach
 

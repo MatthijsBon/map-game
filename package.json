@@ -1,39 +1,31 @@
 {
-  "name": "map-game",
+  "name": "interactive-map-game",
+  "version": "0.1.0",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint --fix . && prettier --write .",
-    "preview": "vite preview"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint && prettier --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "ol": "10.4.0",
-    "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "react-hot-toast": "2.5.2"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "2.5.2",
+    "next": "15.2.2"
   },
   "devDependencies": {
-    "@eslint/js": "9.22.0",
-    "@tailwindcss/postcss": "^4.0.14",
-    "@types/react": "19.0.10",
-    "@types/react-dom": "19.0.4",
-    "@vitejs/plugin-react": "4.3.4",
-    "eslint": "9.22.0",
-    "eslint-plugin-react-hooks": "5.2.0",
-    "eslint-plugin-react-refresh": "0.4.19",
-    "globals": "15.15.0",
-    "postcss": "8.5.3",
-    "prettier": "3.5.3",
-    "tailwindcss": "^4.0.14",
-    "typescript": "5.8.2",
-    "typescript-eslint": "8.26.1",
-    "vite": "5.4.14"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.35.0",
-    "lightningcss-linux-x64-gnu": "1.29.3"
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.2",
+    "@eslint/eslintrc": "^3",
+    "prettier": "3.5.3"
   }
 }

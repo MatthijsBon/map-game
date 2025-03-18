@@ -1,4 +1,4 @@
-import { StationDto, Location } from "./types.ts";
+import { StationDto, Location } from "./types";
 import { GeoJSONFeature } from "ol/format/GeoJSON";
 
 export type Station = {

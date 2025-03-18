@@ -1,2 +1,3 @@
 export * from "./Map";
-export * from "./MapContainer.tsx";
+export * from "./MapContainer";
+export * from "./ToastMessage";

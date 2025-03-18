@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import OlMap from "ol/Map";
 import View from "ol/View";
@@ -7,18 +8,18 @@ import VectorSource from "ol/source/Vector";
 import OSM from "ol/source/OSM";
 import GeoJSON, { GeoJSONFeatureCollection } from "ol/format/GeoJSON";
 import { fromLonLat } from "ol/proj";
-import { Station } from "../../lib/api/stations";
-import { stationStyle, createProvinceStyle, getUniqueColor } from "./styles.ts";
-import "ol/ol.css";
+import { Station } from "@/lib/api/stations";
+import { stationStyle, createProvinceStyle, getUniqueColor } from "./styles";
 import {
   createFeatureCollection,
   getFeatureById,
   getIntersectingPoints,
-} from "./utils.ts";
-import { CRS } from "./constants.ts";
+} from "./utils";
+import { CRS } from "./constants";
 import { Feature } from "ol";
 import toast from "react-hot-toast";
-import { ToastMessage } from "../ToastMessage.tsx";
+import { ToastMessage } from "@/components";
+import "ol/ol.css";
 
 interface MapComponentProps {
   stations: Station[];

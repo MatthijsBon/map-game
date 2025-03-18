@@ -5,7 +5,7 @@ import VectorLayer from "ol/layer/Vector";
 import { Feature } from "ol";
 import { Coordinate } from "ol/coordinate";
 import { FeatureLike } from "ol/Feature";
-import { CRS } from "./constants.ts";
+import { CRS } from "./constants";
 
 export function createFeatureCollection(
   features: GeoJSONFeature[],
