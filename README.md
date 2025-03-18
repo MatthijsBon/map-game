@@ -8,7 +8,7 @@ I have used Tailwind before, although not extensively, but I liked working with 
 
 ## Run the application
 
-It's available on `https://interactivemapgame.netlify.com` or you can run it locally with: 
+It's available on [`https://interactivemapgame.netlify.app`](https://interactivemapgame.netlify.app) or you can run it locally with: 
 ```shell
 npm run dev
 ```
