@@ -153,7 +153,7 @@ export function Map({ stations }: MapComponentProps) {
         if (activeColor.current === null) {
           activeColor.current = realFeature.get("color");
         } else {
-          realFeature.set("color", activeColor.current);
+          realFeature.set("color", activeColor.current, true);
           realFeature.setStyle(createProvinceStyle(activeColor.current));
         }
 
