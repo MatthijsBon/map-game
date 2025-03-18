@@ -10,7 +10,7 @@ I have used Tailwind before, although not extensively, but I liked working with 
 
 It's available on [`https://interactivemapgame.netlify.app`](https://interactivemapgame.netlify.app) or you can run it locally with: 
 ```shell
-npm run dev
+npm install && npm run dev
 ```
 Then go to `http://localhost:5173/` to see the application. You do need to have a `.env` file to run it, with an API key to make requests to the NS Api. 
 
