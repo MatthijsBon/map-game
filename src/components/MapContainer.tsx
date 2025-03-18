@@ -1,26 +1,9 @@
-"use server";
-import { getStationsPromise, Station } from "../lib/api/stations";
+import { getStationsPromise } from "../lib/api/stations";
 import { Map } from "./Map";
+import { use } from "react";
 
-type MapWrapperProps = {
-  onProvinceClick: (
-    name: string,
-    stationsWithin: Pick<Station, "id" | "name">[],
-  ) => void;
-  onWinCondition: () => void;
-};
+export function MapContainer() {
+  const stations = use(getStationsPromise);
 
-export async function MapContainer({
-  onProvinceClick,
-  onWinCondition,
-}: MapWrapperProps) {
-  const stations = await getStationsPromise;
-
-  return (
-    <Map
-      onProvinceClick={onProvinceClick}
-      onWinCondition={onWinCondition}
-      stations={stations}
-    />
-  );
+  return <Map stations={stations} />;
 }

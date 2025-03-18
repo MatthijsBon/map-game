@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import OlMap from "ol/Map";
 import View from "ol/View";
@@ -18,27 +17,37 @@ import {
 } from "./utils.ts";
 import { CRS } from "./constants.ts";
 import { Feature } from "ol";
+import toast from "react-hot-toast";
+import { ToastMessage } from "../ToastMessage.tsx";
 
 interface MapComponentProps {
-  onProvinceClick: (
-    name: string,
-    stationsWithin: Pick<Station, "id" | "name">[],
-  ) => void;
-  onWinCondition: () => void;
   stations: Station[];
 }
 
 // No need to define these in the component
 const geoJsonFormat = new GeoJSON();
 
-export function Map({
-  onProvinceClick,
-  onWinCondition,
-  stations,
-}: MapComponentProps) {
+export function Map({ stations }: MapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<OlMap | null>(null);
   const activeColor = useRef<string | null>(null);
+
+  const onProvinceClick = useCallback(
+    (name: string, stationsWithin: Pick<Station, "id" | "name">[]) => {
+      toast.custom(<ToastMessage name={name} stations={stationsWithin} />, {
+        duration: 4000,
+        position: "bottom-left",
+      });
+    },
+    [],
+  );
+  const onWinCondition = useCallback(() => {
+    toast.success("Alle provincies zijn dezelfde kleur! 🎉", {
+      icon: "🎉",
+      duration: 0,
+      position: "top-center",
+    });
+  }, []);
 
   const stationFeatures = useMemo<GeoJSONFeatureCollection>(
     () =>
